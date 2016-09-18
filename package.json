@@ -1,5 +1,5 @@
 {
-  "name": "mongodb-runner",
+  "name": "mongod-runner",
   "version": "0.0.1",
   "description": "Start and stop a MongoDB daemon.",
   "main": "generated/mongod-runner.js",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:psnider/mongodb-runner.git"
+    "url": "git@github.com:psnider/mongod-runner.git"
   },
-  "typings": "./mongodb-runner.d.ts"
+  "typings": "./mongod-runner.d.ts"
 }
