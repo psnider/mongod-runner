@@ -1,0 +1,29 @@
+{
+  "name": "mongodb-runner",
+  "version": "0.0.1",
+  "description": "Start and stop a MongoDB daemon.",
+  "main": "generated/mongod-runner.js",
+  "keywords": [],
+  "private": false,
+  "scripts": {
+    "postinstall": "typings install",
+    "reinstall": "rm -fr node_modules && npm install",
+    "clean": "rm -fr generated",
+    "build": "tsc -p ."
+  },
+  "author": {
+    "name" : "Peter Snider",
+    "email" : "snider.peter@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^2.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:psnider/mongodb-runner.git"
+  },
+  "typings": "./mongodb-runner.d.ts"
+}
