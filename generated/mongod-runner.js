@@ -6,12 +6,9 @@ var pino = require('pino');
 var tmp = require('tmp');
 var log = pino({ name: 'mongod-runner' });
 var MongoDaemon = (function () {
-    // @param options
-    //     - port: The port to use for this mongod instance. Defaults to  The path to the data storage directory for this mongod instance,
-    //   or "tmp" to create a temporary directory
-    // @param log_path The path to the log file for this mongod instance. Set to null if not needed.
+    // See mongod-runner.d.ts for docs.
     function MongoDaemon(options) {
-        this.port = options.port || MongoDaemon.PORT_DEFAULT;
+        this.port = options.port.toString() || MongoDaemon.PORT_DEFAULT;
         if (options.use_tmp_dir) {
             this.tmp_dir = tmp.dirSync({ unsafeCleanup: true });
             this.db_path = path.join(this.tmp_dir.name, 'data');
@@ -21,13 +18,15 @@ var MongoDaemon = (function () {
             this.db_path = options.db_path;
             this.log_path = options.log_path;
         }
+        if (options.disable_logging) {
+            log.level = 'silent';
+        }
         fs.mkdirSync(this.db_path);
         if (this.log_path) {
             fs.mkdirSync(this.log_path);
         }
     }
-    // Start up a mongod instance, and report completion via a callback.
-    // For example, this can be called in mocha before(), to set up a test database instance.
+    // See mongod-runner.d.ts for docs.
     MongoDaemon.prototype.start = function (done) {
         var done_called = false;
         function guardedDone(error) {
@@ -61,8 +60,7 @@ var MongoDaemon = (function () {
             guardedDone();
         }, 500);
     };
-    // Stop a mongod instance, and report completion via a callback.
-    // This call is for use with mocha test after().
+    // See mongod-runner.d.ts for docs.
     MongoDaemon.prototype.stop = function (done) {
         this.spawned_mongod.kill();
         // Give mongod a chance to shut down
@@ -71,7 +69,7 @@ var MongoDaemon = (function () {
             done();
         }, 500);
     };
-    MongoDaemon.PORT_DEFAULT = 27017;
+    MongoDaemon.PORT_DEFAULT = '27017';
     return MongoDaemon;
 }());
 exports.MongoDaemon = MongoDaemon;
