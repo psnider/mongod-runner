@@ -1,55 +1,90 @@
 import child_process                    = require('child_process')
 import fs                               = require('fs')
+import path                             = require('path')
+import pino                             = require('pino')
+import tmp                              = require('tmp')
 
 
-// Start up a mongod instance, and report completion via a callback.
-// This call is for use with mocha test before().
-// @param db_path The path to the data storage directory for this mongod instance.
-// @param log_path The path to the log file for this mongod instance. Set to null if not needed.
-export function startMongod(port : string, db_path : string, log_path : string, done : (error? : Error) => void) : child_process.ChildProcess {
-    var done_called = false
-    function guardedDone(error? : Error) {
-        if (!done_called) {
-            done_called = true
-            done(error)
+let log = pino({name: 'mongod-runner'})
+
+
+export class MongoDaemon {
+
+    static PORT_DEFAULT = 27017
+
+    port
+    db_path
+    log_path
+    tmp_dir
+    spawned_mongod
+
+    // @param options
+    //     - port: The port to use for this mongod instance. Defaults to  The path to the data storage directory for this mongod instance,
+    //   or "tmp" to create a temporary directory
+    // @param log_path The path to the log file for this mongod instance. Set to null if not needed.
+    constructor(options: {port?: number | string, use_tmp_dir?: boolean, db_path?: string, log_path?: string}) {
+        this.port = options.port || MongoDaemon.PORT_DEFAULT
+        if (options.use_tmp_dir) {
+            this.tmp_dir = tmp.dirSync({unsafeCleanup: true})
+            this.db_path  = path.join(this.tmp_dir.name, 'data')
+            this.log_path = (options.log_path) ? options.log_path : path.join(this.tmp_dir.name, 'log')
+        } else {
+            this.db_path = options.db_path
+            this.log_path = options.log_path
+        }
+        fs.mkdirSync(this.db_path)
+        if (this.log_path) {
+            fs.mkdirSync(this.log_path)
         }
     }
-    fs.mkdirSync(db_path)
-    var args = ['--port', port, '--dbpath', db_path, '--smallfiles']
-    if (log_path) {
-        args.concat(['--logpath', log_path])
-    }
-    var options = {env: process.env}
-    // console.log(`starting mongod with args=${JSON.stringify(args)}`)
-    var spawned_mongod = child_process.spawn('mongod', args, options)
-    spawned_mongod.on('exit', function (code, signal) {
-        if (had_error) {
-            console.log('mongod exited with code=' + code + ' signal=' + signal)
+
+
+    // Start up a mongod instance, and report completion via a callback.
+    // For example, this can be called in mocha before(), to set up a test database instance.
+    start(done: (error?: Error) => void): void {
+        var done_called = false
+        function guardedDone(error? : Error) {
+            if (!done_called) {
+                done_called = true
+                done(error)
+            }
         }
-    })
-    var had_error = false
-    spawned_mongod.on('error', function (error) {
-        had_error = true
-        console.log('startMongod error=' + error)
-        guardedDone(error)
-    })
-    setTimeout(function() {
-        guardedDone()
-    }, 500)
-    return spawned_mongod
-}
+
+        var args = ['--port', this.port, '--dbpath', this.db_path, '--smallfiles']
+        if (this.log_path) {
+            args.concat(['--logpath', this.log_path])
+        }
+        var options = {env: process.env}
+        log.info(`starting mongod with args=${JSON.stringify(args)}`)
+        this.spawned_mongod = child_process.spawn('mongod', args, options)
+        this.spawned_mongod.on('exit', function (exit_code, signal) {
+            let obj = {exit_code, signal}
+            let text = 'mongod exited with code=' + exit_code + ' signal=' + signal
+            if ((exit_code != 0) || (signal)) {
+                log.error(obj, text)
+            } else {
+                log.info(obj, text)
+            }
+        })
+        this.spawned_mongod.on('error', function (error) {
+            log.error('startMongod error=' + error)
+            guardedDone(error)
+        })
+        setTimeout(function() {
+            guardedDone()
+        }, 500)
+    }
 
 
-
-
-// Stop a mongod instance, and report completion via a callback.
-// This call is for use with mocha test after().
-export function stopMongod(spawned_mongod : child_process.ChildProcess, done : (error? : Error) => void) {
-    spawned_mongod.kill()
-    // Give mongod a chance to shut down
-    // TODO: how can we have an event to show this?
-    setTimeout(() => {
-        done()
-    }, 50)
+    // Stop a mongod instance, and report completion via a callback.
+    // This call is for use with mocha test after().
+    stop(done: (error? : Error) => void): void {
+        this.spawned_mongod.kill()
+        // Give mongod a chance to shut down
+        // TODO: how can we have an event to show this?
+        setTimeout(() => {
+            done()
+        }, 500)
+    }
 }
 

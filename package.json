@@ -12,11 +12,13 @@
     "build": "tsc -p ."
   },
   "author": {
-    "name" : "Peter Snider",
-    "email" : "snider.peter@gmail.com"
+    "name": "Peter Snider",
+    "email": "snider.peter@gmail.com"
   },
   "license": "MIT",
   "dependencies": {
+    "pino": "^2.11.0",
+    "tmp": "0.0.29"
   },
   "devDependencies": {
     "typescript": "^2.0.2"
