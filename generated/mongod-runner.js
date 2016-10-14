@@ -5,10 +5,10 @@ var path = require('path');
 var pino = require('pino');
 var tmp = require('tmp');
 var log = pino({ name: 'mongod-runner' });
-var MongoDaemon = (function () {
+var MongoDaemonRunner = (function () {
     // See mongod-runner.d.ts for docs.
-    function MongoDaemon(options) {
-        this.port = options.port.toString() || MongoDaemon.PORT_DEFAULT;
+    function MongoDaemonRunner(options) {
+        this.port = options.port.toString() || MongoDaemonRunner.PORT_DEFAULT;
         if (options.use_tmp_dir) {
             this.tmp_dir = tmp.dirSync({ unsafeCleanup: true });
             this.db_path = path.join(this.tmp_dir.name, 'data');
@@ -27,7 +27,7 @@ var MongoDaemon = (function () {
         }
     }
     // See mongod-runner.d.ts for docs.
-    MongoDaemon.prototype.start = function (done) {
+    MongoDaemonRunner.prototype.start = function (done) {
         var done_called = false;
         function guardedDone(error) {
             if (!done_called) {
@@ -61,7 +61,7 @@ var MongoDaemon = (function () {
         }, 500);
     };
     // See mongod-runner.d.ts for docs.
-    MongoDaemon.prototype.stop = function (done) {
+    MongoDaemonRunner.prototype.stop = function (done) {
         this.spawned_mongod.kill();
         // Give mongod a chance to shut down
         // TODO: how can we have an event to show this?
@@ -69,7 +69,7 @@ var MongoDaemon = (function () {
             done();
         }, 500);
     };
-    MongoDaemon.PORT_DEFAULT = '27017';
-    return MongoDaemon;
+    MongoDaemonRunner.PORT_DEFAULT = '27017';
+    return MongoDaemonRunner;
 }());
-exports.MongoDaemon = MongoDaemon;
+exports.MongoDaemonRunner = MongoDaemonRunner;
