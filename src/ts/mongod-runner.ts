@@ -8,7 +8,7 @@ import tmp                              = require('tmp')
 let log = pino({name: 'mongod-runner'})
 
 
-export class MongoDaemon {
+export class MongoDaemonRunner {
 
     static PORT_DEFAULT:string = '27017'
 
@@ -21,7 +21,7 @@ export class MongoDaemon {
       
     // See mongod-runner.d.ts for docs.
     constructor(options: {port?: number | string, use_tmp_dir?: boolean, db_path?: string, disable_logging?: boolean, log_path?: string}) {
-        this.port = options.port.toString() || MongoDaemon.PORT_DEFAULT
+        this.port = options.port.toString() || MongoDaemonRunner.PORT_DEFAULT
         if (options.use_tmp_dir) {
             this.tmp_dir = tmp.dirSync({unsafeCleanup: true})
             this.db_path  = path.join(this.tmp_dir.name, 'data')

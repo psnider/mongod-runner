@@ -15,7 +15,7 @@ export interface Options {
 }
 
 
-export class MongoDaemon {
+export class MongoDaemonRunner {
     constructor(options: Options)
     // Start up a mongod instance, and report completion via a callback.
     // This call is for use with mocha test before().
