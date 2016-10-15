@@ -21,7 +21,7 @@ export class MongoDaemonRunner {
       
     // See mongod-runner.d.ts for docs.
     constructor(options: {port?: number | string, use_tmp_dir?: boolean, db_path?: string, disable_logging?: boolean, log_path?: string}) {
-        this.port = options.port.toString() || MongoDaemonRunner.PORT_DEFAULT
+        this.port = (options.port || MongoDaemonRunner.PORT_DEFAULT).toString()
         if (options.use_tmp_dir) {
             this.tmp_dir = tmp.dirSync({unsafeCleanup: true})
             this.db_path  = path.join(this.tmp_dir.name, 'data')

@@ -8,7 +8,7 @@ var log = pino({ name: 'mongod-runner' });
 var MongoDaemonRunner = (function () {
     // See mongod-runner.d.ts for docs.
     function MongoDaemonRunner(options) {
-        this.port = options.port.toString() || MongoDaemonRunner.PORT_DEFAULT;
+        this.port = (options.port || MongoDaemonRunner.PORT_DEFAULT).toString();
         if (options.use_tmp_dir) {
             this.tmp_dir = tmp.dirSync({ unsafeCleanup: true });
             this.db_path = path.join(this.tmp_dir.name, 'data');
