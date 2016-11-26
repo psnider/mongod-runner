@@ -1,13 +1,13 @@
 "use strict";
-var child_process = require('child_process');
-var fs = require('fs');
-var path = require('path');
-var pino = require('pino');
-var tmp = require('tmp');
-var log = pino({ name: 'mongod-runner' });
-var MongoDaemonRunner = (function () {
+const child_process = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const pino = require('pino');
+const tmp = require('tmp');
+let log = pino({ name: 'mongod-runner' });
+class MongoDaemonRunner {
     // See mongod-runner.d.ts for docs.
-    function MongoDaemonRunner(options) {
+    constructor(options) {
         this.port = (options.port || MongoDaemonRunner.PORT_DEFAULT).toString();
         if (options.use_tmp_dir) {
             this.tmp_dir = tmp.dirSync({ unsafeCleanup: true });
@@ -27,7 +27,7 @@ var MongoDaemonRunner = (function () {
         }
     }
     // See mongod-runner.d.ts for docs.
-    MongoDaemonRunner.prototype.start = function (done) {
+    start(done) {
         var done_called = false;
         function guardedDone(error) {
             if (!done_called) {
@@ -40,11 +40,11 @@ var MongoDaemonRunner = (function () {
             args.concat(['--logpath', this.log_path]);
         }
         var options = { env: process.env };
-        log.info("starting mongod with args=" + JSON.stringify(args));
+        log.info(`starting mongod with args=${JSON.stringify(args)}`);
         this.spawned_mongod = child_process.spawn('mongod', args, options);
         this.spawned_mongod.on('exit', function (exit_code, signal) {
-            var obj = { exit_code: exit_code, signal: signal };
-            var text = 'mongod exited with code=' + exit_code + ' signal=' + signal;
+            let obj = { exit_code, signal };
+            let text = 'mongod exited with code=' + exit_code + ' signal=' + signal;
             if ((exit_code != 0) || (signal)) {
                 log.error(obj, text);
             }
@@ -59,17 +59,16 @@ var MongoDaemonRunner = (function () {
         setTimeout(function () {
             guardedDone();
         }, 500);
-    };
+    }
     // See mongod-runner.d.ts for docs.
-    MongoDaemonRunner.prototype.stop = function (done) {
+    stop(done) {
         this.spawned_mongod.kill();
         // Give mongod a chance to shut down
         // TODO: how can we have an event to show this?
-        setTimeout(function () {
+        setTimeout(() => {
             done();
         }, 500);
-    };
-    MongoDaemonRunner.PORT_DEFAULT = '27017';
-    return MongoDaemonRunner;
-}());
+    }
+}
+MongoDaemonRunner.PORT_DEFAULT = '27017';
 exports.MongoDaemonRunner = MongoDaemonRunner;

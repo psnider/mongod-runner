@@ -1,7 +1,0 @@
-{
-  "globalDependencies": {
-    "node": "registry:dt/node#6.0.0+20160914131736",
-    "pino": "registry:dt/pino#1.0.1+20160906151259",
-    "tmp": "registry:dt/tmp#0.0.0+20160514170650"
-  }
-}

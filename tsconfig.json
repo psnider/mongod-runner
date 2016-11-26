@@ -1,16 +1,18 @@
 {
-    "version": "2.0.0",
+    "version": "2.0.10",
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "module": "commonjs",
         "declaration": false,
         "noImplicitAny": false,
         "removeComments": false,
         "noLib": false,
-        "outDir": "generated"
+        "outDir": ".",
+        "types": ["node", "pino", "tmp"]
     },
     "scripts": {
-        "postbuild": "echo after building"
+        "build": "bin/build-and-install-in-node_modules.sh",
+        "clean": "rm -f mongod-runner.*js mongod-runner.*map node_modules/@sabbatical/mongod-runner/*"
     },
     "formatCodeOptions": {
         "indentSize": 4,
@@ -27,17 +29,12 @@
         "placeOpenBraceOnNewLineForControlBlocks": false
     },
     "filesGlob": [
-        "src/ts/*.ts",
-        "typings/index.d.ts",
+        "*.ts",
         "mongod-runner.d.ts"
     ],
     "files": [
-        "src/ts/mongod-runner.ts",
-        "typings/index.d.ts",
+        "mongod-runner.ts",
         "mongod-runner.d.ts"
     ],
-    "exclude": [],
-    "atom": {
-        "rewriteTsconfig": true
-    }
+    "exclude": []
 }

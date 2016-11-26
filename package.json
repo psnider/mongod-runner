@@ -1,14 +1,12 @@
 {
-  "name": "mongod-runner",
-  "version": "0.0.1",
+  "name": "@sabbatical/mongod-runner",
+  "version": "0.1.0",
   "description": "Start and stop a MongoDB daemon.",
-  "main": "generated/mongod-runner.js",
+  "main": "mongod-runner.js",
   "keywords": [],
   "private": false,
   "scripts": {
-    "postinstall": "typings install",
-    "reinstall": "rm -fr node_modules && npm install",
-    "clean": "rm -fr generated",
+    "clean": "rm -fr mongod-runner.js",
     "build": "tsc -p ."
   },
   "author": {
@@ -17,13 +15,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "mongoose": "4.6.5",
-    "pino": "2.14.0",
-    "tmp": "0.0.29"
+    "pino": "3.0.1",
+    "tmp": "0.0.31"
   },
   "devDependencies": {
-    "typescript": "2.0.6",
-    "typings": "1.5.0"
+    "@types/node": "6.0.51",
+    "@types/pino": "1.0.5",
+    "@types/tmp": "0.0.31"    
   },
   "repository": {
     "type": "git",
