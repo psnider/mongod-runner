@@ -1,6 +1,6 @@
 {
   "name": "@sabbatical/mongod-runner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Start and stop a MongoDB daemon.",
   "main": "mongod-runner.js",
   "keywords": [],
@@ -21,7 +21,8 @@
   "devDependencies": {
     "@types/node": "6.0.51",
     "@types/pino": "1.0.5",
-    "@types/tmp": "0.0.31"    
+    "@types/tmp": "0.0.31",
+    "typescript": "2.2.1"
   },
   "repository": {
     "type": "git",

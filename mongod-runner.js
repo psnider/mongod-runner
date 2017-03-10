@@ -1,9 +1,10 @@
 "use strict";
-const child_process = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const pino = require('pino');
-const tmp = require('tmp');
+Object.defineProperty(exports, "__esModule", { value: true });
+const child_process = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const pino = require("pino");
+const tmp = require("tmp");
 let log = pino({ name: 'mongod-runner' });
 class MongoDaemonRunner {
     // See mongod-runner.d.ts for docs.
@@ -41,6 +42,7 @@ class MongoDaemonRunner {
         }
         var options = { env: process.env };
         log.info(`starting mongod with args=${JSON.stringify(args)}`);
+        // TODO: [replace spawn() with process-spawner](https://github.com/psnider/process-spawner/issues/1) 
         this.spawned_mongod = child_process.spawn('mongod', args, options);
         this.spawned_mongod.on('exit', function (exit_code, signal) {
             let obj = { exit_code, signal };
@@ -56,6 +58,8 @@ class MongoDaemonRunner {
             log.error('startMongod error=' + error);
             guardedDone(error);
         });
+        // TODO: [modify start() to call done after mongod is accepting connections](https://github.com/psnider/mongod-runner/issues/1)
+        // TODO: [replace spawn() with process-spawner](https://github.com/psnider/process-spawner/issues/1) 
         setTimeout(function () {
             guardedDone();
         }, 500);
@@ -64,7 +68,8 @@ class MongoDaemonRunner {
     stop(done) {
         this.spawned_mongod.kill();
         // Give mongod a chance to shut down
-        // TODO: how can we have an event to show this?
+        // TODO: [modify end() to check that pid is no longer running before returning](https://github.com/psnider/mongod-runner/issues/2)
+        // TODO: [replace spawn() with process-spawner](https://github.com/psnider/process-spawner/issues/1) 
         setTimeout(() => {
             done();
         }, 500);
